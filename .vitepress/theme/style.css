@@ -1,0 +1,15 @@
+:root {
+  --vp-c-brand-1: #4ea1ff;
+  --vp-c-brand-2: #3b8de8;
+  --vp-c-brand-3: #2f79d1;
+  --vp-c-brand-soft: rgba(78, 161, 255, 0.14);
+}
+
+.VPHero .name,
+.VPHero .text {
+  color: var(--vp-c-brand-1);
+}
+
+.VPHomeHero .image-src {
+  border-radius: 8px;
+}
