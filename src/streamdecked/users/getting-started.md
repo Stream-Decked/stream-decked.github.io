@@ -46,5 +46,4 @@ Start the game and plug in your deck. StreamDecked opens it, runs every register
 and draws the first page. Each mod that registered layouts shows up as a folder on the
 deck; inside that folder are the mod's buttons.
 
-Nothing on the deck needs configuration. If the deck is not picked up, check the log for
-lines from `dev.wolfieboy09.streamdecked` about device discovery.
+Nothing on the deck needs configuration. If the deck isn't picked up, check the log for device-discovery issues.
