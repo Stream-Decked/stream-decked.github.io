@@ -50,9 +50,62 @@ surface.setButton(2, 1, DeckButton.of(icon, this::toggleThing)); // column, row
 - `addPage()` appends an empty page to the page stack.
 - `back()`, `nextPage()` and `previousPage()` walk the stack, matching the
   `DeckButton.folder`, `back`, `nextPage` and `previousPage` factories.
-- Skip the keys the folder system reserves for back and page navigation; those are
-  documented on `DeckSurface`.
+- `putButton` places a named button and skips the reserved navigation keys automatically;
+  hand-placed `setButton` calls must still steer clear of them (documented on
+  `DeckSurface`).
 
 `populate` runs on the client thread. Queueing needs: `DeckButton.render` runs on the
 driver thread, so build button images from data the button already holds rather than
 touching game state inside `render`.
+
+## Named buttons at runtime
+
+`putButton` is the runtime companion to `setButton`. It places a button on the first free
+key (skipping the keys reserved for back and page navigation) and returns it; look it up
+later by name.
+
+```java
+NamedButton mute = surface.putButton("mute", speakerOn, this::toggleMute);
+surface.putButton("scene", sceneIcon, this::setScene);
+```
+
+The name is scoped to the page currently showing, so the same name may exist on other
+pages, folders, or decks without colliding.
+
+Plain Java constants work too; `putButton(MyModButtons.MUTE)` places that exact instance:
+
+```java
+public final class MyModButtons {
+    public static final NamedButton MUTE = NamedButton.of("mute", SPEAKER_ON, ModActions::toggleMute);
+    public static final NamedButton SCENE = NamedButton.of("scene", SCENE_ICON, ModActions::setScene);
+}
+
+// in the layout:
+surface.putButton(MyModButtons.MUTE);
+surface.putButton(MyModButtons.SCENE);
+```
+
+`NamedButton.of` mirrors `DeckButton.of`; both `putButton` forms return the placed
+instance, so mutating a constant redraws wherever it shows.
+
+Look up, mutate, or remove a button by name:
+
+```java
+surface.setButtonIcon("mute", mutedIcon);   // redraws the key
+surface.setButtonAction("mute", this::unmute);
+NamedButton mute = surface.button("mute");  // same instance putButton returned
+List<String> names = surface.buttonNames();
+surface.removeButton("mute");
+```
+
+Flip mute state from the callback using the returned instance:
+
+```java
+NamedButton mute = surface.putButton("mute", speakerOn, () -> {
+    muted = !muted;
+    mute.setIcon(muted ? mutedIcon : speakerOn);
+});
+```
+
+Callbacks run on the client thread like any button's `onDown`; the redraw that `setIcon`
+triggers is handed to the driver thread, so game-state reads are fine.

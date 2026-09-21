@@ -28,7 +28,6 @@ public class MyPlugin implements StreamDeckedPlugin {
     }
 
     private void iDoSomething() {
-      // Do something here when pressed
     }
 }
 ```
