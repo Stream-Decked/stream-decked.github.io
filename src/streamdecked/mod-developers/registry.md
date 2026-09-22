@@ -72,8 +72,6 @@ surface.putButton("scene", sceneIcon, this::setScene);
 The name is scoped to the page currently showing, so the same name may exist on other
 pages, folders, or decks without colliding.
 
-Plain Java constants work too; `putButton(MyModButtons.MUTE)` places that exact instance:
-
 ```java
 public final class MyModButtons {
     public static final NamedButton MUTE = NamedButton.of("mute", SPEAKER_ON, ModActions::toggleMute);
