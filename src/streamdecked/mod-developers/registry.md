@@ -21,7 +21,7 @@ registry.register(id, icon, DeckLayoutRegistry.PRIORITY_LOWEST, layout);
 registry.register(id, icon, DeckLayoutRegistry.PRIORITY_HIGHEST, layout);
 ```
 
-- `id` is a `ResourceLocation`, unique per registry. Registering the same id twice throws.
+- `id` is a `ResourceLocation`, unique per registry.
 - `icon` is the `DeckImage` shown on the deck for this layout.
 - `priority` controls ordering. Lower numbers come first
   (`PRIORITY_LOWEST = -1000`, `PRIORITY_DEFAULT = 0`, `PRIORITY_HIGHEST = 1000`).
@@ -32,7 +32,7 @@ folder's icon comes from the namespace, and entries inside it keep their relativ
 ## The layout
 
 A layout is `void populate(DeckSurface surface)` plus an optional `appliesTo(surface)`
-that lets it opt out, e.g. when it needs a touchscreen or 32 keys.
+that lets it opt out, e.g., when it needs a touchscreen or 32 keys.
 
 ```java
 surface.setButton(0, DeckButton.text("Hi", 0xFFFFFFFF, 0xFF4477AA, this::sayHi));
@@ -42,7 +42,7 @@ surface.setButton(2, 1, DeckButton.of(icon, this::toggleThing)); // column, row
 ## DeckSurface quick reference
 
 - `setButton(int key, DeckButton)` and `setButton(int column, int row, DeckButton)`.
-  Pass `null` to blank a key. A column past the deck's width wraps onto the next row so a
+  Pass `null` to blank a key. A column past the deck's width wraps onto the next row, so a
   layout written for a bigger deck still keeps its buttons; a position that wraps off the
   bottom is dropped with a warning in the log instead of throwing.
 - `clearButton(int key)` and `clearAll()`.
