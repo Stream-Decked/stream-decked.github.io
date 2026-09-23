@@ -12,7 +12,8 @@ description: React to hardware and deck lifecycle.
 # Events
 
 Every event carries a surface: `getSurface()`, or the `getDeckId()` and `getModel()`
-shortcuts.
+shortcuts. Input and lifecycle now arrive over the WebSocket from the Stream Deck app; the
+NeoForge events below are exactly as before, just fed by the plugin instead of local HID.
 
 ## DeckInputEvent
 Fired on the game event bus on the client thread during the tick, before the assigned
@@ -37,21 +38,20 @@ public static void onKey(DeckInputEvent.Key event) {
 ## DeckLifecycleEvent
 Fired on the game event bus during the tick.
 
-- `Connected` (cancellable): a deck was opened and a surface built, before registered
-  layouts run. Cancel to keep the layout system off that panel entirely.
+- `Connected` (cancellable): the app reported a deck and a surface was built for it,
+  before registered layouts run. Cancel to keep the layout system off that panel entirely.
 - `Ready`: layouts have run and the panel is drawn. A deck-wide finishing touch.
 - `Disconnected`: the deck went away. The surface is already detached; do not queue work
   on it.
 
 ## StreamDeckSetupEvent
-Fired on the mod event bus once, right after the driver thread starts and before any deck
-is opened. The place to adjust driver-wide settings.
+Fired on the mod event bus once, at startup before the connection loop begins and before any
+deck is bound. The place to adjust connection-wide settings.
 
 ```java
 public static void deckSetupEvent(StreamDeckSetupEvent event) {
     event.setDefaultBrightness(60);
     event.setResetOnConnect(true);
-    event.setAllowedDeckIds(List.of("ABC12345"));
 }
 ```
 
@@ -59,8 +59,6 @@ public static void deckSetupEvent(StreamDeckSetupEvent event) {
   listener to set it wins, so treat it as a default rather than a user setting.
 - `setResetOnConnect(boolean)` blanks and resets a connecting deck before layouts run
   (on by default).
-- `setAllowedDeckIds(Collection<String>)` restricts the driver to the listed serial
-  numbers; every other attached device is left for the official software.
 - `getManager()` is the live driver. Queue work on it when you need something outside
   the layout system.
 

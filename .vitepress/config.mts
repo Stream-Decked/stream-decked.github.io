@@ -28,7 +28,8 @@ export default defineConfig({
     },
 
     nav: [
-      { text: 'Home', link: '/' }
+      { text: 'Home', link: '/' },
+      { text: 'SD5J', link: '/sd5j/' }
     ],
 
     sidebar: {

@@ -1,7 +1,7 @@
 ---
 prev:
-  text: StreamDecked
-  link: /streamdecked/
+  text: Images
+  link: /sd5j/images
 
 next:
   text: Writing a Plugin
@@ -12,6 +12,9 @@ description: Set up a mod that integrates with StreamDecked.
 ---
 
 # Depending on StreamDecked
+
+The SDK itself, package by package, is documented on the [SD5J page](/sd5j/). This page is
+about wiring a mod up to the mod's driver.
 
 ## Declaring the dependency
 
@@ -26,22 +29,26 @@ ordering = "NONE"
 side = "CLIENT"
 ```
 
-In `build.gradle`, add the StreamDecked maven and point the implementation at it:
+In `build.gradle`, add the StreamDecked maven and point the implementation at the library.
+The mod embeds the library, but your integration compiles against the artifact directly:
 
 ```groovy
 repositories {
-    mavenCenteral()
-    
+    mavenCentral()
+
     maven {
         name = "streamdecked"
         url = "https://dl.cloudsmith.io/public/wolfieboy09/stream-decked/maven/"
         content {
-          includeGroup("dev.wolfieboy09")
+          includeGroup("dev.wolfieboy09.sd5j")
         }
     }
 }
 
 dependencies {
-    implementation "dev.wolfieboy09:streamdecked:1.0.0"
+    implementation "dev.wolfieboy09.sd5j:sd5j:1.0.0"
 }
 ```
+
+The library is pure Java and has no Minecraft dependency, so the artifact stays the same no
+matter which mod loader or Minecraft version consumes it.

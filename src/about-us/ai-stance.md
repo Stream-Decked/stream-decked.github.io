@@ -16,7 +16,7 @@ The following libraries were used as references:
 - [Julusian/node-elgato-stream-deck](https://github.com/Julusian/node-elgato-stream-deck)
 
 As a rule of thumb, I have always reviewed the generated code and made changes as
-needed. The mod is not fully AI-generated. Generative AI was used only for the hardware
+needed. The project is not fully AI-generated. Generative AI was used only for the hardware
 API and no other repository within StreamDecked, and only after I attempted the
 work myself first.
 

@@ -1,4 +1,17 @@
 export default {
+  '/sd5j/': [
+    {
+      text: 'SD5J',
+      link: '/sd5j/',
+      items: [
+        { text: 'Overview', link: '/sd5j/' },
+        { text: 'Connecting', link: '/sd5j/connecting' },
+        { text: 'Deck Model', link: '/sd5j/model' },
+        { text: 'Events', link: '/sd5j/events' },
+        { text: 'Images', link: '/sd5j/images' }
+      ]
+    }
+  ],
   '/streamdecked/': [
     {
       text: 'StreamDecked',
@@ -8,13 +21,15 @@ export default {
           text: 'For Users',
           collapsed: true,
           items: [
-            { text: 'Getting Started', link: '/streamdecked/users/getting-started' }
+            { text: 'Getting Started', link: '/streamdecked/users/getting-started' },
+            { text: 'How It Works', link: '/streamdecked/how-it-works' }
           ]
         },
         {
           text: 'For Mod Developers',
           collapsed: true,
           items: [
+            { text: 'The SD5J Library', link: '/sd5j/' },
             { text: 'Depending on StreamDecked', link: '/streamdecked/mod-developers/depending' },
             { text: 'Writing a Plugin', link: '/streamdecked/mod-developers/plugin' },
             { text: 'Registering Layouts', link: '/streamdecked/mod-developers/registry' },

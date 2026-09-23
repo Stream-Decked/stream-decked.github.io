@@ -5,14 +5,14 @@ layout: home
 lastUpdated: false
 
 title: StreamDecked
-description: A library for mods to have functionality with Elgato's Stream Decks.
+description: A pure-Java library, a NeoForge mod, and a Stream Deck plugin.
 
 # Replace with the real logo once the icon lands.
 # image: https://example.org/assets/streamdecked-icon.webp
 
 hero:
   name: "StreamDecked"
-  tagline: "A library for mods to have functionality with Elgato's Stream Decks."
+  tagline: "A pure-Java library for Stream Decks, used by the Stream Deck app through a plugin."
 
   # image:
   #   src: /assets/streamdecked-icon.webp
