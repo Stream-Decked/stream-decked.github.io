@@ -18,7 +18,7 @@ The following libraries were used as references:
 As a rule of thumb, I have always reviewed the generated code and made changes as
 needed. The project is not fully AI-generated. Generative AI was used only for the hardware
 API and no other repository within StreamDecked, and only after I attempted the
-work myself first.
+work myself first. I wrote code myself, and when issues occured that I was unable to fix, AI was used to help guide me to a fix.
 
 How generative AI was used:
 - Reading the referenced, unmaintained Stream Deck libraries

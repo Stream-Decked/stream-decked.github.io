@@ -27,7 +27,3 @@ features:
     link: ./sd5j
     linkText: Read More
 ---
-
-StreamDecked is a pure-Java Stream Deck SDK, a NeoForge mod that bundles it, and a Stream Deck
-software plugin that ties them together. Mods put buttons on your deck and the deck talks
-back. Ever have a mod with way too many keybinds? Use a deck instead.
