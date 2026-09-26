@@ -40,14 +40,20 @@ repositories {
         name = "streamdecked"
         url = "https://dl.cloudsmith.io/public/wolfieboy09/stream-decked/maven/"
         content {
-          includeGroup("dev.wolfieboy09.sd5j")
-          includeGroup("dev.wolfieboy09.streamdecked")
+            includeGroup("dev.wolfieboy09.streamdecked")
+        }
+    }
+    maven {
+        name = "sd5j"
+        url = "https://dl.cloudsmith.io/public/wolfieboy09/sd5j/maven/"
+        content {
+            includeGroup("dev.wolfieboy09.sd5j")
         }
     }
 }
 
 dependencies {
-  implementation "dev.wolfieboy09.streamdecked:StreamDecked:{$minecraft_version}-{$stream_decked_version}"
+  implementation "dev.wolfieboy09.streamdecked:StreamDecked:$minecraft_version-$stream_decked_version"
 }
 ```
 
