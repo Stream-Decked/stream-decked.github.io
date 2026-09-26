@@ -52,3 +52,17 @@ dependencies {
 
 The library is pure Java and has no Minecraft dependency, so the artifact stays the same no
 matter which mod loader or Minecraft version consumes it.
+
+## Which version to use
+
+The library and the mod ship on their own cadence, so pin the library to the version the mod
+you depend on was built against and let the version range do the rest:
+
+- `sd5j` `1.0.0` is current. It is the first release on the WebSocket transport, and adds
+  encoders and screen taps and holds alongside keys.
+- Anything older than `1.0.0` predates the WebSocket transport and will not connect to the
+  plugin.
+
+`DeckTextures` and the event bus come from the mod, not the library, so put your integration
+mod on the client side (`side = "CLIENT"`) like the example above. A server-only mod has no
+deck to talk to.

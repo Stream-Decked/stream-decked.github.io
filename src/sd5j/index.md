@@ -62,6 +62,10 @@ manager.addListener(event -> {
 });
 ```
 
+That drives raw key images. Most code never touches a deck directly: a `DeckSurface` holds a
+`DeckButton` per key and a `DeckLayout` fills a surface, which is what the
+[mod](/streamdecked/) builds on top of.
+
 From here the rest of the section breaks the pieces apart:
 [connecting](/sd5j/connecting) and driving decks, the [deck model](/sd5j/model),
-[events](/sd5j/events) and [images](/sd5j/images).
+[surfaces and buttons](/sd5j/surfaces), [events](/sd5j/events) and [images](/sd5j/images).

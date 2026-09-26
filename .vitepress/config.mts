@@ -11,7 +11,6 @@ export default defineConfig({
   title: 'StreamDecked',
   description: 'Less keybinds, more buttons.',
 
-  // Replace with the real logo once the icon lands.
   head: [
     // ['link', { rel: 'icon', href: '/assets/streamdecked-icon.webp' }],
   ],

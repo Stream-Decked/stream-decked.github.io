@@ -62,6 +62,34 @@ for (int key : new int[] {0, 1, 2}) {
 deck.clearKey(4);   // uploads DeckImageCodec.blankKey(model)
 ```
 
+## Icon plus caption
+
+`DeckText.iconWithCaption` is the compositor behind `DeckButton.labelled` and
+`NamedButton.setCaption`. It takes an icon, a caption and a caption colour, and returns the
+image a key shows:
+
+```java
+DeckImage labelled = DeckText.iconWithCaption(speakerOn, "Mute", 96, 96, 0xFFFFFFFF);
+```
+
+A blank or `null` caption gives the icon the whole key, a `null` icon leaves the caption on a
+solid panel, and both `null` is a blank key. Call it directly when a caption has to be drawn
+on something that is not a button.
+
+## Pixel art
+
+Minecraft textures are the reason `pixel*` exists. `pixelResize` and `pixelFitInto` use
+nearest neighbour, so a 16x16 block or item stays square instead of turning to mush, while
+`resize` and `fitInto` are bilinear and better for photographic or scaled art.
+
+```java
+DeckImage icon = DeckImage.decode(pngBytes);        // a 16x16 block or item
+surface.setButton(0, DeckButton.of(icon, onPress));
+```
+
+The button factories pixel-fit the icon for you, so `DeckButton.of` and `labelled` are safe
+for a raw 16x16 texture. Reach for `fitInto` only when the art is not pixel art.
+
 ## Buttons and surfaces
 
 The layout layer pairs a `DeckButton` (or `NamedButton`) with a `DeckSurface`. Buttons render
@@ -74,8 +102,9 @@ NamedButton mute = surface.putButton("mute", speakerOn, this::toggleMute);
 
 // Mutating the returned instance redraws wherever it is placed.
 mute.setIcon(mutedIcon);
+mute.setCaption("Muted", 0xFFFF5555);
 ```
 
 Build buttons from data the button already holds: `render(width, height)` runs on the driver
 thread and must not touch game state. The same rule lands on `DeckText`, which is only safe
-from render code.
+from render code. [Surfaces and buttons](/sd5j/surfaces) covers the rest.

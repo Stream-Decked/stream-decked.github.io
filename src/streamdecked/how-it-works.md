@@ -26,6 +26,24 @@ StreamDecked is three pieces that cooperate instead of fighting over the hardwar
   many clients: every Minecraft instance (or any other JVM embedding the library) is a
   separate client.
 
+## Modspace, and why a profile is needed
+
+The plugin ships a profile named Modspace, and the deck has to be on that profile before
+anything can be drawn. A Stream Deck app plugin can only switch the deck to a profile it
+ships; it cannot create one at runtime, and it cannot take a deck over from another profile.
+So the first time a client connects, the plugin asks the app to switch to Modspace, and the
+app shows the user an install prompt.
+
+That is the one piece of user interaction in the whole design. Accept the prompt and the
+plugin is in Modspace, and the library is free to write key images; decline it and the switch
+fails, the plugin logs it, and the deck stays on whatever profile the user already had.
+Nothing is drawn and the user's own keys are untouched, which is the intended failure mode.
+
+The Modspace root page carries an **Exit** key. Pressing it sends an `exit` frame to the
+client, which asks the plugin to switch back to the profile that was active before takeover.
+A re-paint that arrives after the switch is dropped, so the user is not raced by a stale
+image.
+
 ## Why a plugin at all
 
 A Stream Deck without the Stream Deck software is a broken product; the app is always
@@ -44,6 +62,12 @@ existing NeoForge events fire unchanged.
 Decks are described by matching the app-reported device name against the library's model
 table; dimensions are not read over HID anymore. An unknown model is ignored until the table
 gains an entry for it.
+
+The protocol is deliberately narrow right now. The client sends `hello`, key images, a `surface`
+reply and `exit`; the app sends deck connect and disconnect, key down and up, encoder down, up
+and rotation, screen taps and holds, and surface requests. Screens, brightness and device reset
+are app-owned, and gestures such as swipes and Neo capacitive touchpoints are not in the API at
+all, because Elgato's plugin SDK does not deliver them.
 
 ## One server, many clients
 

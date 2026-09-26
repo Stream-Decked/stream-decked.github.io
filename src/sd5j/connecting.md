@@ -23,6 +23,8 @@ connection to the app session, which is bound to at most one deck:
 - `boundDeckId()`, `boundModel()` (null while queued or disconnected)
 - `setKeyImage(int key, byte[] encoded)`, `setScreenImage(byte[])`, `setBrightness(int)`,
   `reset()`
+- `exit()`, which asks the plugin to leave Modspace and hand the deck back to the profile
+  that was active before StreamDecked took over. It is ignored while disconnected.
 - `setListener(Listener)` with `Listener.onEvent(DeckEvent)` and
   `Listener.onError(Throwable)`
 
@@ -37,10 +39,28 @@ While the server is unreachable it logs "no Stream Deck server found" and retrie
 backoff, re-reading the pairing file on every attempt so a plugin restart (new port and token)
 is picked up without restarting the client.
 
-Frames it sends: `hello`, `setImage` (one key image as base64, matching the model's spec).
+Frames it sends: `hello`, `setImage` (one key image as base64, matching the model's spec),
+`surface` (the full key image map, in reply to a surface request) and `exit`.
 Frames it handles: `helloOk` (may bind the client to a deck), `deckConnect`, `deckDisconnect`,
-`keyDown`, `keyUp`, `error`. Screens, brightness and device reset are app-owned today, so
-`setScreenImage`, `setBrightness` and `reset` are no-ops on this transport.
+`keyDown`, `keyUp`, `encoderDown`, `encoderUp`, `encoderRotate`, `screenTap`, `surface`
+(a request to re-push) and `error`.
+
+Input frames all carry `deckId`, so the plugin routes them without guessing which deck they
+belong to. `encoderRotate` carries a `ticks` count, positive clockwise and negative
+counter-clockwise, and the transport drops a zero rather than reporting a detent that did not
+happen. `screenTap` carries `x`, `y` and a `hold` flag in whole-strip pixels, and the library
+splits it into `ScreenTap` and `ScreenHold` on the flag.
+
+Screens, brightness and device reset are app-owned today, so `setScreenImage`,
+`setBrightness` and `reset` are no-ops on this transport. The client is also key-image only:
+everything it paints goes to page 0, and there is no title or remove-button frame, even
+though the plugin's protocol understands them.
+
+::: warning Exiting Modspace
+`exit()` is the call that makes the deck usable again. Calling it hands the panel back to
+the user's previous profile, so only call it when you actually mean to stop drawing, for
+example from a button that is meant to close a menu.
+:::
 
 ## StreamDeckManager
 
@@ -86,14 +106,18 @@ Handlers read best as named methods, one per event:
 void onConnected(DeckEvent.Connected c) {
     LOGGER.info("bound to deck {}: {}", c.deckId(), c.model());
     manager.submit(c.deckId(), deck -> {
-        deck.setKeyImage(0, DeckImage.black(96, 96));
-        deck.setBrightness(60);
+        DeckModel.ImageSpec key = c.model().keyImage();
+        if (key == null) return;
+        deck.setKeyImage(0, DeckImage.black(key.width(), key.height()));
     });
 }
 
 void onKeyDown(DeckEvent.KeyDown down) {
-    manager.submit(down.deckId(),
-            deck -> deck.setKeyImage(down.key(), DeckImage.black(96, 96)));
+    manager.submit(down.deckId(), deck -> {
+        DeckModel.ImageSpec key = down.model().keyImage();
+        if (key == null) return;
+        deck.setKeyImage(down.key(), DeckImage.black(key.width(), key.height()));
+    });
 }
 ```
 
