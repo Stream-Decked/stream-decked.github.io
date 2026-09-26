@@ -96,9 +96,8 @@ Your `META-INF/neoforge.mods.toml` needs the StreamDecked dependency, client sid
 
 ## Testing it
 
-1. Build your mod and drop the jar in your profile.
-2. Start the game with a deck plugged in and Modspace open.
-3. Press the `mydeck` key to enter the folder, then the entry you registered.
+1. Start the game with a deck plugged in and Modspace open.
+2. Press the `mydeck` key to enter the folder, then the entry you registered.
 
 If nothing appears, the log is the fastest answer. A missing class shows as
 `Plugin class in ... not found, skipping`, and an unresolvable id shows as a registration
