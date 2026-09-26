@@ -21,7 +21,7 @@ about wiring a mod up to the mod's driver.
 In `META-INF/neoforge.mods.toml`:
 
 ```toml
-[[dependencies.streamdecked]]
+[[dependencies.${mod_id}]]
 modId = "streamdecked"
 type = "optional"
 versionRange = "[1.0.0,)"
