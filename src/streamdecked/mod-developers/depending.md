@@ -41,6 +41,7 @@ repositories {
         url = "https://dl.cloudsmith.io/public/wolfieboy09/stream-decked/maven/"
         content {
           includeGroup("dev.wolfieboy09.sd5j")
+          includeGroup("dev.wolfieboy09.streamdecked")
         }
     }
 }
