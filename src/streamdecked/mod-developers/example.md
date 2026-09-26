@@ -23,7 +23,6 @@ it works.
 package com.example.mydeck;
 
 import dev.wolfieboy09.sd5j.core.DeckButton;
-import dev.wolfieboy09.sd5j.core.DeckImage;
 import dev.wolfieboy09.streamdecked.client.DeckTextures;
 import dev.wolfieboy09.streamdecked.plugin.DeckLayoutRegistry;
 import dev.wolfieboy09.streamdecked.plugin.StreamDeckedPlugin;
@@ -37,19 +36,14 @@ public class MyDeckPlugin implements StreamDeckedPlugin {
 
     @Override
     public void registerLayouts(DeckLayoutRegistry registry) {
-        // The icon shown on the Modspace key that enters this layout.
-        DeckImage icon = DeckTextures.item(Items.CRAFTING_TABLE);
-        if (icon == null) {
-            // The texture is missing, and register rejects a null icon. Bail out loudly
-            // rather than crashing the plugin load.
-            return;
-        }
-
-        registry.register(ID, icon, surface -> {
+        // One call, nothing to unwrap. The ...OrPlaceholder loaders always return a real
+        // image, so a texture that fails to load shows a checkerboard rather than a
+        // compile error or a null check.
+        registry.register(ID, DeckTextures.itemOrPlaceholder(Items.CRAFTING_TABLE), surface -> {
             surface.setButton(0, 1, DeckButton.text("Hi", 0xFFFFFFFF, 0xFF4477AA,
                     MyDeckPlugin::sayHi));
             surface.setButton(1, 1, DeckButton.named("lights",
-                    DeckTextures.item(Items.REDSTONE_LAMP), "Lights",
+                    DeckTextures.itemOrPlaceholder(Items.REDSTONE_LAMP), "Lights",
                     MyDeckPlugin::toggleLights));
         });
     }
@@ -65,10 +59,15 @@ public class MyDeckPlugin implements StreamDeckedPlugin {
 ```
 
 Three things are worth calling out. The layout is a lambda because `DeckLayout` has exactly
-one abstract method, `populate(DeckSurface)`. `DeckTextures` is nullable, because a texture
-that is not on disk has no image, and a layout icon is not optional, so the null check is
-mandatory rather than defensive. And the buttons pixel-fit whatever icon they are handed,
-which is what keeps a raw 16x16 item from turning to blur on a 96x96 key.
+one abstract method, `populate(DeckSurface)`. A missing texture is handled by the loader you
+pick, not by a null check in your mod, so `registerLayouts` stays a single call. And the
+buttons pixel-fit whatever icon they are handed, which is what keeps a raw 16x16 item from
+turning to blur on a 96x96 key.
+
+Pick the loader that matches what you want to happen when the texture is not on disk:
+`itemOrPlaceholder` and friends draw a checkerboard, while `item` returns an empty
+`Optional` for when you would rather branch. See
+[Images and Text](/streamdecked/mod-developers/images).
 
 ## The descriptor
 

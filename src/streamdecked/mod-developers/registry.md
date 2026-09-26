@@ -23,8 +23,10 @@ registry.register(id, icon, DeckLayoutRegistry.PRIORITY_HIGHEST, layout);
 
 - `id` is a `ResourceLocation`, unique per registry. Registering the same id twice throws
   `IllegalStateException`.
-- `icon` is the `DeckImage` shown on the deck for this layout. It is required and may not be
-  null, which matters because `DeckTextures` is nullable.
+- `icon` is the `DeckImage` shown on the deck for this layout, and is `@Nullable`. A null icon
+  logs a warning naming the id and skips that layout, so one missing texture costs you a
+  folder rather than the whole load. Pass `DeckTextures.blockOrPlaceholder(block)` if you
+  would rather always have a real image.
 - `priority` controls ordering. Lower numbers come first
   (`PRIORITY_LOWEST = -1000`, `PRIORITY_DEFAULT = 0`, `PRIORITY_HIGHEST = 1000`).
   `getEntries()` returns them sorted by priority, then registration order.

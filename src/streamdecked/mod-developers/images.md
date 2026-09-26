@@ -47,18 +47,34 @@ A `DeckButton.render(width, height)` receives the panel's native key size (72, 8
 already knows where the game keeps its textures.
 
 ```java
-DeckImage block = DeckTextures.block(Blocks.STONE);
-DeckImage item = DeckTextures.item(Items.DIAMOND);
-DeckImage stack = DeckTextures.item(stack);          // respects components
-DeckImage custom = DeckTextures.load(id);            // any ResourceLocation
+DeckImage block = DeckTextures.blockOrPlaceholder(Blocks.STONE);
+DeckImage item = DeckTextures.itemOrPlaceholder(Items.DIAMOND);
+DeckImage stack = DeckTextures.itemOrPlaceholder(stack);   // respects components
+DeckImage custom = DeckTextures.loadOrPlaceholder(id);     // any ResourceLocation
 ```
 
-`item(Item)`, `item(ItemStack)` and `block(Block)` are **nullable**: they return null when the
-texture is not on disk, and `item` falls back from `textures/item/...` to
-`textures/block/...` for block items. `registry.register` rejects a null icon, so check it.
+Those are the ones you normally want. The `...OrPlaceholder` loaders always return a real
+image, so a texture that is not on disk draws a `placeholder()` checkerboard instead of
+needing a null check. Nothing in your mod ever has to test for absence.
 
-`pixelScale(source, w, h)` and `pixelFit(...)` scale nearest-neighbour for anything that is
-not already a `DeckImage` from `DeckTextures`. `invalidate()` drops the cache and is called
+When you would rather decide yourself, the plain loaders return an empty `Optional` rather
+than null:
+
+```java
+DeckTextures.item(Items.DIAMOND)
+        .map(icon -> DeckButton.named("gem", icon, "Gem", this::onGem))
+        .orElseGet(() -> DeckButton.text("Gem", 0xFFFFFFFF, 0xFF2D3138, this::onGem));
+```
+
+`item(Item)`, `item(ItemStack)` and `block(Block)` are empty when the texture is missing, and
+`item` falls back from `textures/item/...` to `textures/block/...` for block items.
+`registry.register` takes a `@Nullable DeckImage` and skips the layout with a warning if it is
+null, so passing a plain loader's `.orElse(null)` is safe, just less convenient.
+
+`Optional` is only ever a return type here, never a parameter, which keeps it out of the
+signature noise. `pixelScale(source, w, h)` and `pixelFit(...)` scale nearest-neighbour for
+anything that is not already a `DeckImage` from `DeckTextures`; they take a real image and
+always return one, so they are not `Optional`. `invalidate()` drops the cache and is called
 for you on a resource reload.
 
 ## Pixel art
