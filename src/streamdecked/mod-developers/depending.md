@@ -24,7 +24,7 @@ In `META-INF/neoforge.mods.toml`:
 [[dependencies.${mod_id}]]
 modId = "streamdecked"
 type = "optional"
-versionRange = "[1.0.0,)"
+versionRange = "[1.21.1-1.0.0,)"
 ordering = "NONE"
 side = "CLIENT"
 ```
