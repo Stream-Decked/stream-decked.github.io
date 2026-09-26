@@ -21,6 +21,13 @@ API and no other repository within StreamDecked, and only after I attempted the
 work myself first. I wrote code myself, and when issues occured that I was unable to fix, AI was used to help guide me to a fix.
 
 How generative AI was used:
-- Reading the referenced, unmaintained Stream Deck libraries
-- Writing some classes
-- Bug fixing
+- Some parts of the wiki
+- SD5J
+    - Fixing some bugs after migration
+    - DeckImages and various other things
+- Elgato plugin
+    - Writing networking and some other things
+    - Bug fixing
+- Stream Decked Library
+    - Communication with the elgato plugin
+    - Some bug fixes
