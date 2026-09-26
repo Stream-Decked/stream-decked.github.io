@@ -47,7 +47,7 @@ repositories {
 }
 
 dependencies {
-  implementation 'dev.wolfieboy09.streamdecked:StreamDecked:{minecraft_version}-{stream_decked_version}'
+  implementation "dev.wolfieboy09.streamdecked:StreamDecked:{$minecraft_version}-{$stream_decked_version}"
 }
 ```
 
