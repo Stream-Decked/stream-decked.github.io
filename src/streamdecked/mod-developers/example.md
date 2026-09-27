@@ -22,7 +22,7 @@ it works.
 ```java
 package com.example.mydeck;
 
-import dev.wolfieboy09.sd5j.core.DeckButton;
+import dev.wolfieboy09.sd5j.button.DeckButton;
 import dev.wolfieboy09.streamdecked.client.DeckTextures;
 import dev.wolfieboy09.streamdecked.plugin.DeckLayoutRegistry;
 import dev.wolfieboy09.streamdecked.plugin.StreamDeckedPlugin;

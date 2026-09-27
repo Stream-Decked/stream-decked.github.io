@@ -39,6 +39,15 @@ While the server is unreachable it logs "no Stream Deck server found" and retrie
 backoff, re-reading the pairing file on every attempt so a plugin restart (new port and token)
 is picked up without restarting the client.
 
+::: warning That server is the plugin
+There is nothing for the transport to connect to unless the Stream Deck app is running with the
+StreamDecked plugin installed, so "no Stream Deck server found" is nearly always a missing
+plugin rather than a broken deck or a port clash. A pairing file left over from an earlier
+session is not enough on its own; the plugin writes a fresh one as it starts.
+
+See [SD5J](/sd5j/) for what has to be installed.
+:::
+
 Frames it sends: `hello`, `setImage` (one key image as base64, matching the model's spec),
 `surface` (the full key image map, in reply to a surface request) and `exit`.
 Frames it handles: `helloOk` (may bind the client to a deck), `deckConnect`, `deckDisconnect`,

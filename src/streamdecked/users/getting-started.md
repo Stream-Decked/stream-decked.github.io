@@ -18,11 +18,13 @@ it put buttons on your deck, and those mods are what you experience.
 
 ## Requirements
 
-- A Stream Deck app (the official Elgato software) with the DeckedOut MC plugin installed.
+- A Stream Deck app (the official Elgato software) with the StreamDecked plugin installed:
+  [Stream Deck plugin](https://example.org/streamdecked-plugin).
 - The StreamDecked mod, with any mods you want on the deck.
 
 The mod connects to the plugin inside the Stream Deck app over a local WebSocket, so the
-app must be running.
+app must be running. Nothing on the deck is drawn until the plugin is there to serve the
+connection; see [How It Works](/streamdecked/how-it-works) for why that indirection is there.
 
 ## First launch
 

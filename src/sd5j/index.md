@@ -18,6 +18,17 @@ models, key images and input, and it reaches a real deck through the Stream Deck
 claiming the USB device. No Minecraft code, no mod loader hooks, no natives and no JNI: the same
 artifact runs inside the mod and inside any other JVM.
 
+::: warning SD5J needs the Stream Deck plugin
+SD5J is a client, not a driver. It does not open the deck itself: it connects to a small
+WebSocket server that the **StreamDecked plugin** runs inside the Stream Deck app, and that
+server is what holds the panel. With the app closed, or the plugin not installed, nothing binds,
+every key stays black, and the library has no fallback to the USB device because taking the USB
+device is exactly what it avoids.
+
+So installing the library is only half of it. Install the plugin too, from the plugin list in
+the Stream Deck app: [Stream Deck plugin](https://example.org/streamdecked-plugin).
+:::
+
 ## Getting it
 
 ```groovy
@@ -43,9 +54,13 @@ Minecraft you provide them yourself.
 
 ## Packages
 
-- `dev.wolfieboy09.sd5j.core`: deck model, transport seam, driver, events, buttons,
-  surfaces and layouts.
-- `dev.wolfieboy09.sd5j.core.image`: `DeckImage` and `DeckImageCodec`.
+- `dev.wolfieboy09.sd5j.deck`: `DeckModel`, the `StreamDeck` session and `StreamDeckManager`.
+- `dev.wolfieboy09.sd5j.layout`: what a layout is written against, `DeckLayout`, `DeckSurface`,
+  `DeckPaginator` and `DeckNavStyle`.
+- `dev.wolfieboy09.sd5j.button`: `DeckButton`, `NamedButton` and `DeckText`.
+- `dev.wolfieboy09.sd5j.event`: `DeckEvent` and the wire-level `DeckInput`.
+- `dev.wolfieboy09.sd5j.image`: `DeckImage` and `DeckImageCodec`.
+- `dev.wolfieboy09.sd5j.transport`: the `DeckTransport` seam.
 - `dev.wolfieboy09.sd5j.remote`: the WebSocket transport that talks to the Stream Deck app.
 
 ## A minimal embedding
