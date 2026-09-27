@@ -60,8 +60,8 @@ dependencies {
 
 Now in your `gradle.properties`:
 ```properties
-stream_decked_version=1.0.1
-sd5j_version=1.0.1
+stream_decked_version=1.0.5
+sd5j_version=1.0.4
 ```
 
 The library is pure Java and has no Minecraft dependency, so the artifact stays the same no
