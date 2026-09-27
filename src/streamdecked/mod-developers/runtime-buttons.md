@@ -114,6 +114,79 @@ if (deck.back()) { /* returned to the level above */ }
 `addPage` appends an empty page and switches to it, which is the usual way to build a screen
 from scratch. `currentPageIndex` and `pageCount` tell you where you are.
 
+Since every one of those methods is relative to the current page, acting on a page the player
+is not on means moving them there first, or noticing when they arrive. See
+[Addressing a specific page](#addressing-a-specific-page) below.
+
+## Addressing a specific page
+
+There is no `getFolder(id)`, no `currentPage()` and no `page(int)`. The page type is private to
+`DeckSurface`, and every name-based method above quietly works on whichever page is showing.
+You cannot ask for a page you are not on, and a button will not tell you which key it holds.
+
+What you can do is notice that the player is already on your page. Folder buttons navigate the
+*live* surface rather than one they captured, so its page stack always mirrors where the player
+actually is, and a page rebuilds its name index from the `NamedButton`s in it. So if they are
+standing in your spells folder, `removeButton("fireball")` already refers to the right button.
+
+Answering "am I on my page?" is `currentFolderId()`. The mod tags the folder it generates for your
+layout with your layout's own id, so a layout can recognise its own pages without leaving a
+sentinel button on them:
+
+```java
+private static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(MOD_ID, "spells");
+
+public void refresh(DeckSurface deck, Player player) {
+    if (!ID.toString().equals(deck.currentFolderId())) return;   // not in the spells folder
+    for (String slot : SLOTS) {
+        deck.removeButton(slot);                    // putButton throws on a duplicate name,
+        if (unlocked.contains(slot)) {              // so remove first to stay idempotent
+            deck.putButton(slot, iconFor(slot), () -> cast(slot));
+        }
+    }
+}
+```
+
+That is a string compare, so it costs nothing while the player is somewhere else. The mod also tags
+its own folders, if you need to tell them apart: `StreamDeckDriver.HOME_ID` for the Modspace home
+button, and `<namespace>:folder` for a generated per-mod folder.
+
+## Pages that depend on runtime data
+
+A list of everything the player has learned does not have a fixed length. `replacePages` swaps
+the current level's pages for a new set, which is how such a folder re-paginates itself:
+
+```java
+List<Map<Integer, DeckButton>> pages = new ArrayList<>();
+for (int i = 0; i < batches.size(); i++) pages.add(buildPage(batches.get(i), player));
+deck.replacePages(pages);
+```
+
+It keeps the player on the same page index where that still exists and clamps when the list
+shrinks, so learning a spell does not throw them back to the first page. The folder id survives
+the swap, so a layout that recognises itself by `currentFolderId()` stays recognised across it.
+`pageCount()` and `currentPageIndex()` tell you what is on screen, and the usual
+`nextPage()` / `previousPage()` move between pages.
+
+`addPage()` appends a single empty page and switches to it, which is rarely what a layout driven
+by a list wants.
+
+### Additions do not survive re-entry
+
+Descending into a folder builds its pages fresh from the maps you handed over, every time.
+Anything you added while the player was standing there lived on the live page, not in your map,
+so it is gone the moment they leave and come back.
+
+Keep your own page data as the source of truth and re-apply it on the way in. There is no
+"page entered" event, so either drive `refresh` from a client tick, guarded by
+`currentFolderId()`, which costs nothing while they are elsewhere, or call it from whatever game
+event your mod already listens for.
+
+Checking that the page already matches what you would build keeps that per-tick call free: compare
+what should be on it against `buttonNames()`. Everything you placed with `putButton` is a
+`NamedButton` and shows up there, while the mod's own back and page navigation are not, so a set
+comparison lines up with your own view of the page.
+
 ## Guard the two exceptions
 
 `putButton` throws rather than picking a different key, because silently overwriting a
