@@ -36,6 +36,7 @@ export default {
             { text: 'Example Plugin', link: '/streamdecked/mod-developers/example' },
             { text: 'Registering Layouts', link: '/streamdecked/mod-developers/registry' },
             { text: 'Images and Text', link: '/streamdecked/mod-developers/images' },
+            { text: 'Dynamic Buttons', link: '/streamdecked/mod-developers/runtime-buttons' },
             { text: 'Events', link: '/streamdecked/mod-developers/events' }
           ]
         }

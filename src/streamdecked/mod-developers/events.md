@@ -1,7 +1,7 @@
 ---
 prev:
-  text: Images and Text
-  link: /streamdecked/mod-developers/images
+  text: Dynamic Buttons
+  link: /streamdecked/mod-developers/runtime-buttons
 
 next: false
 

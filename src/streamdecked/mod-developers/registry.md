@@ -131,3 +131,7 @@ NamedButton mute = surface.putButton("mute", speakerOn, () -> {
 
 Callbacks run on the client thread like any button's `onDown`; the redraw that `setIcon`
 triggers is handed to the driver thread, so game-state reads are fine.
+
+All of the above runs inside `populate`, once, against a throwaway surface. To add or remove
+buttons *after* the deck has been built, work on a live surface instead. See
+[Dynamic Buttons](/streamdecked/mod-developers/runtime-buttons).

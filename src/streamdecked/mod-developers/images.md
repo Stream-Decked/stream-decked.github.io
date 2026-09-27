@@ -4,8 +4,8 @@ prev:
   link: /streamdecked/mod-developers/registry
 
 next:
-  text: Events
-  link: /streamdecked/mod-developers/events
+  text: Dynamic Buttons
+  link: /streamdecked/mod-developers/runtime-buttons
 
 title: Images and Text
 description: Drawing on keys with DeckImage and DeckText.
