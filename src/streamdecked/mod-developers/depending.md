@@ -72,9 +72,9 @@ matter which mod loader or Minecraft version consumes it.
 The library and the mod ship on their own cadence, so pin the library to the version the mod
 you depend on was built against and let the version range do the rest:
 
-- `sd5j` `1.0.1` is current. It is the first release on the WebSocket transport, and adds
+- `sd5j` `1.0.5` is current. It is the first release on the WebSocket transport, and adds
   encoders and screen taps and holds alongside keys.
-- Anything older than `1.0.1` predates the WebSocket transport and will not connect to the
+- Anything older than `1.0.5` predates the WebSocket transport and will not connect to the
   plugin.
 
 `DeckTextures` and the event bus come from the mod, not the library, so put your integration
