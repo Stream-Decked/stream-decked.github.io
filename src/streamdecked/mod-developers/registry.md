@@ -71,8 +71,14 @@ registry.register(id, icon, new DeckLayout() {
 - `back()`, `nextPage()` and `previousPage()` walk the stack, matching the
   `DeckButton.folder`, `back`, `nextPage` and `previousPage` factories.
 - `putButton` places a named button and skips the reserved navigation keys automatically;
-  hand-placed `setButton` calls must still steer clear of them (documented on
-  `DeckSurface`).
+  hand-placed `setButton` calls must still steer clear of them. Ask `isReservedKey(key)` or
+  `contentKeys()` which keys those are, or let `DeckPaginator` place the content for you.
+- `backKey()`, `previousKey()` and `nextKey()` are the bottom navigation row.
+  `previousKey()` is `backKey() + 1`, not `nextKey() - 1`.
+- `replacePages(List<Map<Integer, DeckButton>>)` swaps the current level's pages for a new set,
+  keeping the player on the same page index where it still exists.
+- `currentFolderId()` reports the open folder's id, so a layout can recognise its own pages
+  without planting a marker button on them.
 
 `populate` runs on the client thread. Queueing needs: `DeckButton.render` runs on the
 driver thread, so build button images from data the button already holds rather than

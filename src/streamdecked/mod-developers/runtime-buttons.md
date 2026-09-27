@@ -168,8 +168,81 @@ the swap, so a layout that recognises itself by `currentFolderId()` stays recogn
 `pageCount()` and `currentPageIndex()` tell you what is on screen, and the usual
 `nextPage()` / `previousPage()` move between pages.
 
+The `batches` and `buildPage` above are the part worth not writing yourself;
+[Paginating a list](#paginating-a-list) covers the helper that does it.
+
 `addPage()` appends a single empty page and switches to it, which is rarely what a layout driven
 by a list wants.
+
+## Where navigation lives
+
+The bottom row belongs to the deck, not to you, and the keys it uses are not where you would guess.
+Reading them off `DeckModel` saves re-deriving the arithmetic:
+
+```java
+int back     = deck.model().backKey();      // keyCount - columns, bottom left
+int previous = deck.model().previousKey();  // back + 1
+int next     = deck.model().nextKey();      // keyCount - 1, bottom right
+```
+
+`previous` is `back + 1`, **not** `next - 1`. On anything wider than three columns those are
+different keys, so the second guess writes a Prev button two keys to the right of where the
+generated one goes. `DeckSurface` exposes the same three as `backKey()`, `nextKey()` and
+`previousKey()`, so you can ask the surface you are drawing on.
+
+Two more answer the question those keys raise, which is what is left:
+
+```java
+deck.isReservedKey(key);   // true if navigation owns it
+deck.contentKeys();        // every key free for content right now, ascending
+```
+
+`putButton` already skips reserved keys, so this only matters when you are placing by index with
+`setButton`.
+
+Note that `contentKeys()` is the *live* answer: next and previous only count as reserved once the
+level has more than one page, so a single-page folder hands those keys back to you. That is correct
+behaviour, and it is also why you should not read a page count off it and hard-code it.
+
+## Paginating a list
+
+Cutting a list into pages is the same handful of lines in every layout, so `DeckPaginator` does it.
+Hand it the list and a function that turns one item into a button, say which navigation buttons you
+want, and it hands back the page maps that `openFolder` and `replacePages` take:
+
+```java
+DeckPaginator<Spell> pages = DeckPaginator.of(deck.model(), learned, this::spellButton);
+pages.back(DeckButton.back("Back", 0xFFFFFFFF, 0xFF202020))
+     .next(DeckButton.nextPage("Next", 0xFFFFFFFF, 0xFF202020));
+
+pages.refresh(deck);
+```
+
+- `back`, `next` and `previous` take a `DeckButton` and are chainable; each may be left null.
+- `capacity()` is how many items fit per page, a plain function of the deck and the buttons you
+  chose, so you can size a layout against it. It throws if navigation leaves no key free, which
+  only happens on a three-key pedal with all three reserved.
+- `isPaged()` and `pageCount()` tell you whether the list spills and into how many pages.
+- `contentKeys()` is the stable counterpart to the live one on `DeckSurface`: it holds next and
+  previous aside as soon as you pass a button for them, whether or not the list needs them.
+- `build()` gives you the `List<Map<Integer, DeckButton>>`; `openOn(deck, id)` and
+  `refresh(deck)` are `build()` followed by the matching call.
+- `pages()` gives you the cut list itself, which is what you compare against `buttonNames()` to
+  decide whether a live folder needs rebuilding at all.
+
+Next and previous are only *drawn* when the list needs a second page, so a short list does not
+show a Next that goes nowhere. Back is reserved even when you pass no button for it, because that
+is the key the mod claims on every folder page and a layout that fills it loses its back button.
+
+Pass no navigation at all when you only want the first page, such as while the deck is capturing
+and the mod is going to add the navigation for you. Back stays free in that case, so the capture
+still works; the pages past the first are simply not used.
+
+```java
+// capture pass: one page of content, no navigation, mod injects Back
+DeckPaginator.of(deck.model(), learned, this::spellButton).build().getFirst()
+        .forEach(deck::setButton);
+```
 
 ### Additions do not survive re-entry
 
@@ -205,7 +278,8 @@ private void replace(DeckSurface deck, String name, DeckImage icon, Runnable onP
 
 `putButton` skips the keys reserved for back and page navigation. Hand-placed `setButton`
 calls do not, so steer clear of the bottom navigation row yourself or you will land on top
-of Back and Next.
+of Back and Next. Ask `isReservedKey` or `contentKeys` which keys those are, or let
+`DeckPaginator` place the content for you; see [Where navigation lives](#where-navigation-lives).
 
 ## What removal looks like on the deck
 

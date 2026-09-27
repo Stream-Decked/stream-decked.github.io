@@ -127,6 +127,46 @@ surface.exportPages();        // the current page tree, as the layout registry c
 `pushPage`/`popPage`/`pageDepth` are aliases of `openFolder`/`back`/`folderDepth`, added so
 mod code can read as pages rather than folders.
 
+## The navigation row
+
+The bottom row belongs to navigation, and the keys are not where you would guess:
+
+```java
+model.backKey();      // keyCount - columns, bottom left
+model.previousKey();  // back + 1
+model.nextKey();      // keyCount - 1, bottom right
+```
+
+`previousKey` is `back + 1`, **not** `next - 1`; on anything wider than three columns those are
+different keys. `DeckSurface` exposes the same three, plus the two methods that answer what is
+left over:
+
+```java
+surface.isReservedKey(key);   // true if navigation owns it
+surface.contentKeys();        // every key free for content right now
+```
+
+`contentKeys()` is the live answer, so it gives next and previous back on a single-page level.
+`DeckPaginator.contentKeys()` is the stable counterpart that holds them aside.
+
+## Paginating a list
+
+`DeckPaginator` cuts a list into pages of keys and builds the page maps `openFolder` and
+`replacePages` take:
+
+```java
+DeckPaginator<Spell> pages = DeckPaginator.of(surface.model(), spells, this::spellButton);
+pages.back(DeckButton.back("Back", 0xFFFFFFFF, 0xFF202020))
+     .next(DeckButton.nextPage("Next", 0xFFFFFFFF, 0xFF202020));
+
+pages.refresh(surface);   // or openOn(surface, id) to descend into it
+```
+
+`capacity()`, `pageCount()`, `isPaged()`, `pages()` and `contentKeys()` report what it decided.
+Back is always reserved, even with no button for it, because that is the key a folder page gives
+to Back. Next and previous are reserved once you pass a button, and drawn only when the list needs
+a second page.
+
 ## The dials and touchscreen
 
 Everything above paints keys. A Stream Deck + and + XL also have rotary encoders and a
