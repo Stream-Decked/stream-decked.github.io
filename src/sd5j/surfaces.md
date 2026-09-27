@@ -156,16 +156,21 @@ surface.contentKeys();        // every key free for content right now
 
 ```java
 DeckPaginator<Spell> pages = DeckPaginator.of(surface.model(), spells, this::spellButton);
-pages.back(DeckButton.back("Back", 0xFFFFFFFF, 0xFF202020))
-     .next(DeckButton.nextPage("Next", 0xFFFFFFFF, 0xFF202020));
-
-pages.refresh(surface);   // or openOn(surface, id) to descend into it
+pages.previous();          // optional
+pages.refresh(surface);    // or openOn(surface, id) to descend into it
 ```
 
+Back and next are added for you in the standard navigation look, and next is only drawn once the
+list needs a second page. Previous is opt-in via `previous()`, because it costs a content key.
+`noNavigation()` drops all three, which is what a capture pass wants so the mod can inject its own.
+
+`nav(DeckNavStyle)` recolours the automatic buttons, so a layout can match its own palette instead
+of taking the library's white-on-near-black default. The style is read when pages are built, so
+call order does not matter.
+
 `capacity()`, `pageCount()`, `isPaged()`, `pages()` and `contentKeys()` report what it decided.
-Back is always reserved, even with no button for it, because that is the key a folder page gives
-to Back. Next and previous are reserved once you pass a button, and drawn only when the list needs
-a second page.
+Back's key is reserved even with no button for it, because that is the key a folder page gives to
+Back.
 
 ## The dials and touchscreen
 

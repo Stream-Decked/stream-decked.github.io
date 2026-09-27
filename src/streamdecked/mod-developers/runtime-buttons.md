@@ -207,40 +207,60 @@ behaviour, and it is also why you should not read a page count off it and hard-c
 ## Paginating a list
 
 Cutting a list into pages is the same handful of lines in every layout, so `DeckPaginator` does it.
-Hand it the list and a function that turns one item into a button, say which navigation buttons you
-want, and it hands back the page maps that `openFolder` and `replacePages` take:
+Hand it the list and a function that turns one item into a button, and it hands back the page maps
+that `openFolder` and `replacePages` take:
 
 ```java
 DeckPaginator<Spell> pages = DeckPaginator.of(deck.model(), learned, this::spellButton);
-pages.back(DeckButton.back("Back", 0xFFFFFFFF, 0xFF202020))
-     .next(DeckButton.nextPage("Next", 0xFFFFFFFF, 0xFF202020));
-
+pages.previous();          // optional, see below
 pages.refresh(deck);
 ```
 
-- `back`, `next` and `previous` take a `DeckButton` and are chainable; each may be left null.
-- `capacity()` is how many items fit per page, a plain function of the deck and the buttons you
-  chose, so you can size a layout against it. It throws if navigation leaves no key free, which
+Back and next are added for you in the standard navigation look, so most layouts never name a label
+or a colour. Next is only *drawn* once the list needs a second page.
+
+- `nav(DeckNavStyle)` or `colors(textArgb, backgroundArgb)` recolours the buttons the paginator
+  draws. Applied when the pages are built, so it makes no difference whether you set it before or
+  after asking for a button. Buttons you pass yourself are left alone.
+- `previous()` adds a Prev button as well. It is not automatic because it costs a content key, and
+  most lists are short enough not to need it.
+- `back`, `next` and `previous` also take a `DeckButton`, so you can replace one outright.
+- `noNavigation()` drops all three, for a page whose navigation someone else supplies.
+- `capacity()` is how many items fit per page, a plain function of the deck and the navigation you
+  asked for, so you can size a layout against it. It throws if navigation leaves no key free, which
   only happens on a three-key pedal with all three reserved.
 - `isPaged()` and `pageCount()` tell you whether the list spills and into how many pages.
 - `contentKeys()` is the stable counterpart to the live one on `DeckSurface`: it holds next and
-  previous aside as soon as you pass a button for them, whether or not the list needs them.
+  previous aside as soon as they are in play, whether or not the list needs them.
 - `build()` gives you the `List<Map<Integer, DeckButton>>`; `openOn(deck, id)` and
   `refresh(deck)` are `build()` followed by the matching call.
 - `pages()` gives you the cut list itself, which is what you compare against `buttonNames()` to
   decide whether a live folder needs rebuilding at all.
 
-Next and previous are only *drawn* when the list needs a second page, so a short list does not
-show a Next that goes nowhere. Back is reserved even when you pass no button for it, because that
-is the key the mod claims on every folder page and a layout that fills it loses its back button.
+To match your own palette, hand the paginator a style. Share one instance to keep a whole plugin
+looking the same:
 
-Pass no navigation at all when you only want the first page, such as while the deck is capturing
-and the mod is going to add the navigation for you. Back stays free in that case, so the capture
-still works; the pages past the first are simply not used.
+```java
+private static final DeckNavStyle NAV = new DeckNavStyle(0xFF101010, 0xFF303030);
+
+DeckPaginator.of(deck.model(), learned, this::spellButton)
+        .nav(NAV)
+        .refresh(deck);
+```
+
+`DeckNavStyle.DEFAULT` is white on near-black, which is what you get when you say nothing.
+
+Back's key is reserved even with no button for it, because that is the key the mod claims on every
+folder page and a layout that fills it loses its back button.
+
+Drop the navigation when you only want the first page, such as while the deck is capturing and the
+mod is going to add the navigation for you. That keeps the back key clear so the capture still
+works; the pages past the first are simply not used.
 
 ```java
 // capture pass: one page of content, no navigation, mod injects Back
-DeckPaginator.of(deck.model(), learned, this::spellButton).build().getFirst()
+DeckPaginator.of(deck.model(), learned, this::spellButton)
+        .noNavigation().build().getFirst()
         .forEach(deck::setButton);
 ```
 
